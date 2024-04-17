@@ -45,7 +45,7 @@ CUSTODY_SUBNET_COUNT=2 go test -bench=. -benchtime=10x
 Average `1.667ms`
 
 ```bash
-CUSTODY_SUBNET_COUNT=1 go test -bench=. -benchtime=10000x -timeout 180m
+CUSTODY_SUBNET_COUNT=1 go test -bench=. -benchtime=10000x
 
 goos: linux
 goarch: amd64
@@ -61,6 +61,8 @@ ok  	github.com/savid/peerdas-custody-benchmark	16.689s
 Average `50.979ms`
 
 ```bash
+CUSTODY_SUBNET_COUNT=2 go test -bench=. -benchtime=1000x
+
 goos: linux
 goarch: amd64
 pkg: github.com/savid/peerdas-custody-benchmark
@@ -75,6 +77,8 @@ ok  	github.com/savid/peerdas-custody-benchmark	51.008s
 Average `1.851s`
 
 ```bash
+CUSTODY_SUBNET_COUNT=3 go test -bench=. -benchtime=100x
+
 goos: linux
 goarch: amd64
 pkg: github.com/savid/peerdas-custody-benchmark
@@ -89,6 +93,8 @@ ok  	github.com/savid/peerdas-custody-benchmark	186.151s
 Average `77.868s`
 
 ```bash
+CUSTODY_SUBNET_COUNT=4 go test -bench=. -benchtime=10x -timeout 60m
+
 goos: linux
 goarch: amd64
 pkg: github.com/savid/peerdas-custody-benchmark
