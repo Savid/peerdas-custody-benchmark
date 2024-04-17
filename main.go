@@ -5,7 +5,9 @@ import (
 	"encoding/binary"
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/crypto"
@@ -105,17 +107,52 @@ func findMatchingNodeID(sourceNodeID enode.ID, custodySubnetCount uint64) (*enod
 		return nil, err
 	}
 
-	for {
-		privateKey, _ := crypto.GenerateKey()
-		nodeID := enode.PubkeyToIDV4(&privateKey.PublicKey)
+	numGoroutines := runtime.NumCPU() // Number of goroutines to run in parallel
+	resultChan := make(chan *enode.ID)
+	errorChan := make(chan error, numGoroutines) // Buffer to hold errors from all goroutines
+	doneChan := make(chan bool)
 
-		testColumns, err := getCustodyColumns(nodeID, custodySubnetCount)
-		if err != nil {
-			return nil, err
-		}
-		if fmt.Sprint(sourceColumns) == fmt.Sprint(testColumns) {
-			return &nodeID, nil
-		}
+	var wg sync.WaitGroup
+	wg.Add(numGoroutines)
+
+	for i := 0; i < numGoroutines; i++ {
+		go func() {
+			defer wg.Done()
+			for {
+				select {
+				case <-doneChan:
+					return
+				default:
+					privateKey, _ := crypto.GenerateKey()
+					nodeID := enode.PubkeyToIDV4(&privateKey.PublicKey)
+
+					testColumns, err := getCustodyColumns(nodeID, custodySubnetCount)
+					if err != nil {
+						errorChan <- err
+						return
+					}
+					if fmt.Sprint(sourceColumns) == fmt.Sprint(testColumns) {
+						resultChan <- &nodeID
+						return
+					}
+				}
+			}
+		}()
+	}
+
+	go func() {
+		wg.Wait()
+		close(resultChan)
+		close(errorChan)
+	}()
+
+	select {
+	case result := <-resultChan:
+		close(doneChan)
+		return result, nil
+	case err := <-errorChan:
+		close(doneChan)
+		return nil, err
 	}
 }
 
@@ -132,6 +169,7 @@ func main() {
 		sourceNodeID = generateNodeID()
 	}
 
+	fmt.Println("Threads:", runtime.NumCPU())
 	fmt.Println("custody subnet count:", CustodySubnetCount)
 	fmt.Println("Source node ID:", sourceNodeID)
 	sourceColumns, err := getCustodyColumns(sourceNodeID, CustodySubnetCount)
