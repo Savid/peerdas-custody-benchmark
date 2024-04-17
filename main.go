@@ -107,9 +107,9 @@ func findMatchingNodeID(sourceNodeID enode.ID, custodySubnetCount uint64) (*enod
 		return nil, err
 	}
 
-	numGoroutines := runtime.NumCPU() // Number of goroutines to run in parallel
+	numGoroutines := runtime.NumCPU()
 	resultChan := make(chan *enode.ID)
-	errorChan := make(chan error, numGoroutines) // Buffer to hold errors from all goroutines
+	errorChan := make(chan error, numGoroutines)
 	doneChan := make(chan bool)
 
 	var wg sync.WaitGroup
