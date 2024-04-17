@@ -32,3 +32,68 @@ CUSTODY_SUBNET_COUNT=4 go test -bench=.
 # run 10 times
 CUSTODY_SUBNET_COUNT=2 go test -bench=. -benchtime=10x
 ```
+
+## My results
+
+- `CUSTODY_SUBNET_COUNT=1` - **~1.667ms**
+- `CUSTODY_SUBNET_COUNT=2` - **~50.979ms**
+- `CUSTODY_SUBNET_COUNT=3` - **~1.851s**
+- `CUSTODY_SUBNET_COUNT=4` - **~77.868s**
+
+### `CUSTODY_SUBNET_COUNT=1`
+
+Average `1.667ms`
+
+```bash
+CUSTODY_SUBNET_COUNT=1 go test -bench=. -benchtime=10000x -timeout 180m
+
+goos: linux
+goarch: amd64
+pkg: github.com/savid/peerdas-custody-benchmark
+cpu: AMD Ryzen 9 5950X 16-Core Processor            
+BenchmarkFindMatchingNodeID-32    	   10000	   1667380 ns/op
+PASS
+ok  	github.com/savid/peerdas-custody-benchmark	16.689s
+```
+
+### `CUSTODY_SUBNET_COUNT=2`
+
+Average `50.979ms`
+
+```bash
+goos: linux
+goarch: amd64
+pkg: github.com/savid/peerdas-custody-benchmark
+cpu: AMD Ryzen 9 5950X 16-Core Processor            
+BenchmarkFindMatchingNodeID-32    	    1000	  50979241 ns/op
+PASS
+ok  	github.com/savid/peerdas-custody-benchmark	51.008s
+```
+
+### `CUSTODY_SUBNET_COUNT=3`
+
+Average `1.851s`
+
+```bash
+goos: linux
+goarch: amd64
+pkg: github.com/savid/peerdas-custody-benchmark
+cpu: AMD Ryzen 9 5950X 16-Core Processor            
+BenchmarkFindMatchingNodeID-32    	     100	1851158881 ns/op
+PASS
+ok  	github.com/savid/peerdas-custody-benchmark	186.151s
+```
+
+### `CUSTODY_SUBNET_COUNT=4`
+
+Average `77.868s`
+
+```bash
+goos: linux
+goarch: amd64
+pkg: github.com/savid/peerdas-custody-benchmark
+cpu: AMD Ryzen 9 5950X 16-Core Processor            
+BenchmarkFindMatchingNodeID-32    	      10	77867527345 ns/op
+PASS
+ok  	github.com/savid/peerdas-custody-benchmark	827.942s
+```
